@@ -32,54 +32,116 @@ Core logic:
 
 This sender-bound hash prevents copied commitments from being useful to attackers.
 
-## Setup instructions
+## Complete Setup Guide
 
-### 1) Install dependencies
+Follow these steps in order. Open multiple terminal windows as indicated.
 
-From project root:
+### Step 1: Install All Dependencies
 
+Run this in your project root directory (one time only):
+
+```powershell
 npm install
 npm --prefix frontend install
-
-### 2) Compile contracts
-
 npm run compile
-
-### 3) Run tests
-
 npm run test
+```
 
-Covered tests:
+**What happens:**
+- `npm install` - installs Hardhat, Solidity compiler, testing frameworks
+- `npm --prefix frontend install` - installs React, Vite, Ethers for frontend
+- `npm run compile` - compiles MempoolShield.sol contract to bytecode
+- `npm run test` - runs 5 tests including front-running vulnerability simulation (all should pass)
 
-1. Normal flow: commit then delayed reveal succeeds.
-2. Early reveal: fails before delay.
-3. Wrong salt: fails with invalid reveal.
-4. Double commit: blocked before reveal.
-5. Front-running simulation: attacker copies commitment but cannot reveal as victim.
+### Step 2: Start Local Blockchain
 
-### 4) Deploy locally
+Open **Terminal 1** and run:
 
-Terminal 1:
-
+```powershell
 npm run node
+```
 
-Terminal 2:
+This starts a local Hardhat blockchain at `http://127.0.0.1:8545` on chain ID 31337.
 
+**Keep this terminal running.** You will see 20 test accounts with 10,000 ETH each.
+
+### Step 3: Deploy Smart Contract
+
+Open **Terminal 2** and run:
+
+```powershell
 npm run deploy:localhost
+```
 
-Copy the deployed contract address from terminal output.
+**Output will show:**
+```
+MempoolShield deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+minRevealDelay blocks: 5
+```
 
-### 5) Configure frontend
+**Copy the deployed address** (e.g., `0x5FbDB...`). You will need it next.
 
-Create frontend/.env file:
+### Step 4: Configure Frontend Environment
 
-VITE_CONTRACT_ADDRESS=PASTE_DEPLOYED_ADDRESS_HERE
+Still in **Terminal 2**, create the frontend env file with the address you just copied:
 
-### 6) Run frontend
+```powershell
+Set-Content -Path ".\frontend\.env" -Value "VITE_CONTRACT_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3`nVITE_CHAIN_ID=31337"
+```
 
+Replace `0x5FbDB...` with your actual deployed address from Step 3.
+
+### Step 5: Start Frontend Dev Server
+
+Still in **Terminal 2**, run:
+
+```powershell
 npm run frontend
+```
 
-Open the URL shown by Vite, usually http://localhost:5173.
+Output will show:
+```
+VITE v6.4.1 ready in 320 ms
+Local: http://localhost:5173/
+```
+
+Open that URL in your browser.
+
+### Step 6: Connect Wallet & Demo
+
+In the browser app:
+
+1. **Click "Connect Wallet"** - approve in Rabby/MetaMask
+2. **Go to Commit page:**
+   - Enter an action (e.g., `buy-100`)
+   - Salt auto-generates
+   - Save/copy/download salt
+   - Tick "I have saved my salt"
+   - Click Commit
+   - Approve transaction in wallet
+3. **Wait or mine blocks** (see Optional Commands below)
+4. **Go to Reveal page:**
+   - Enter same action and salt
+   - Click Reveal
+   - Approve transaction
+   - See success message
+
+### Optional Commands (Advanced)
+
+If reveal says "too early", mine blocks immediately using **Terminal 3**:
+
+```powershell
+cd "C:\Users\anshn\Downloads\6th Sem\Blockchain\Project"
+npx hardhat console --network localhost
+```
+
+Inside the Hardhat console, run:
+
+```js
+await network.provider.send("hardhat_mine", ["0x5"])
+```
+
+Then exit with `.exit` and try Reveal again in the app.
 
 ## Node utilities
 
