@@ -1,0 +1,30 @@
+{
+  "name": "mempool-shield",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mempool-Shield: Commit-Reveal protocol demo to prevent front-running",
+  "scripts": {
+    "clean": "hardhat clean",
+    "compile": "hardhat compile",
+    "test": "cross-env HARDHAT_DISABLE_TELEMETRY=true HARDHAT_DISABLE_TELEMETRY_PROMPT=true hardhat test",
+    "node": "hardhat node",
+    "deploy:localhost": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:hardhat": "hardhat run scripts/deploy.ts --network hardhat",
+    "salt:generate": "node utils/generateSalt.js",
+    "commitment:create": "node utils/createCommitment.js",
+    "frontend": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "cross-env": "^7.0.3",
+    "hardhat": "^2.22.18",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.4"
+  }
+}
