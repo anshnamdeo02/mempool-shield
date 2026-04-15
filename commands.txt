@@ -1,0 +1,14 @@
+1.	npm install
+npm –prefix frontend install
+npm run compile 
+npm run test
+
+2.	npm run node
+3.	npm run deploy:localhost
+4.	npm run frontend
+5.  npm run benchmark
+6.  npm run test:gas
+
+5.	Open hardhat console - npx hardhat console --network localhost
+
+6.	Mine five new blocks - await network.provider.send("hardhat_mine", ["0x10"]) 

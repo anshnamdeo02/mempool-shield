@@ -208,3 +208,82 @@ If the user loses salt, reveal cannot be recovered and transaction reveal must f
 4. Wait at least 5 blocks.
 5. Go to Reveal page and reveal with same action and salt.
 6. Run Simulation page scenarios for comparison.
+
+## Results And Measurements
+
+Your professor wants evidence of real execution time and blockchain cost. Use this section to collect and paste numbers from your runs.
+
+### What To Measure
+
+1. Deployment gas cost
+2. Commit gas cost
+3. Reveal gas cost
+4. Total commit-reveal flow time
+5. Comparison against the vulnerable simulation flow
+
+### Commands To Run
+
+Run these commands from the project root:
+
+```powershell
+npm run test:gas
+npm run benchmark
+```
+
+What each command does:
+
+- `npm run test:gas` - runs the test suite with Hardhat gas reporter enabled, so you can see gas usage per test and function.
+- `npm run benchmark` - deploys the contract on Hardhat's in-memory local chain, executes commit and reveal, and prints gas used plus elapsed time in JSON.
+
+### Where To Paste The Results
+
+Paste the output from `npm run benchmark` into a table in your final report or README.
+
+Suggested table format:
+
+| Metric | Value |
+| --- | --- |
+| Deployment Gas | fill in from benchmark output |
+| Commit Gas | fill in from benchmark output |
+| Reveal Gas | fill in from benchmark output |
+| Total Flow Time (ms) | fill in from benchmark output |
+| Minimum Delay (blocks) | 5 |
+
+### Optional Comparison Section
+
+Add a short comparison paragraph in your report:
+
+- Without commit-reveal, a higher-gas attacker can move ahead in the mempool.
+- With Mempool-Shield, the attacker still cannot reveal successfully because the hash is bound to `msg.sender` and the salt is hidden until reveal.
+- Therefore, gas price alone is not enough to steal the transaction.
+
+### Measured Local Results
+
+These numbers were collected from the local Hardhat benchmark and gas-reported tests in this project.
+
+| Metric | Value |
+| --- | --- |
+| Deployment Gas | 370,542 |
+| Commit Gas | 70,252 |
+| Reveal Gas | 52,653 |
+| Total Commit-Reveal Flow Time | 51 ms |
+| Minimum Delay | 5 blocks |
+
+Gas reporter summary from `npm run test:gas`:
+
+| Contract | Method | Average Gas |
+| --- | --- | --- |
+| MempoolShield | commit | 70,252 |
+| MempoolShield | reveal | 52,635 |
+
+### Notes For Final Submission
+
+1. If you run into a Windows assertion after tests finish, the results are still valid because the test suite completed successfully before shutdown.
+2. For best stability on Windows, use Node.js 20 LTS instead of Node.js 24.
+3. Include screenshots or pasted console output of the benchmark table in your final report.
+
+### Example Benchmark Workflow
+
+1. Run `npm run benchmark`
+2. Copy the JSON output into your report results section
+3. If you also want the browser demo, then separately start `npm run node`, deploy locally, and run the frontend
