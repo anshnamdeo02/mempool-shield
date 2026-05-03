@@ -276,11 +276,72 @@ Gas reporter summary from `npm run test:gas`:
 | MempoolShield | commit | 70,252 |
 | MempoolShield | reveal | 52,635 |
 
-### Notes For Final Submission
+### Architecture
 
-1. If you run into a Windows assertion after tests finish, the results are still valid because the test suite completed successfully before shutdown.
-2. For best stability on Windows, use Node.js 20 LTS instead of Node.js 24.
-3. Include screenshots or pasted console output of the benchmark table in your final report.
+```mermaid
+graph TD
+    A[User Opens App] --> B[Connect Wallet MetaMask or Rabby]
+    B --> C{Wallet Connected?}
+    C -->|No| B
+    C -->|Yes| D[Go to Commit Page]
+    
+    D --> E[Enter Action buy-100]
+    E --> F[Generate Random Salt 32 bytes]
+    
+    F --> G[Compute Hash keccak256 address action salt]
+    
+    G --> H[Save Salt to localStorage]
+    
+    H --> I{Salt Saved?}
+    I -->|No| E
+    I -->|Yes| J[Click Commit]
+    
+    J --> K[Wallet Popup Sign Tx]
+    
+    K --> L[Send to Smart Contract]
+    
+    L --> M[Check No active commit and valid hash]
+    
+    M --> N[Store hash block number revealed false]
+    
+    N --> O[Emit Committed Event]
+    O --> P[Commit Successful Block 100]
+    
+    P --> Q[Wait 5 Blocks]
+    
+    Q --> R[Check block number >= 105]
+    
+    R --> S{Can Reveal?}
+    S -->|No| R
+    S -->|Yes| T[Go to Reveal Page]
+    
+    T --> U[Load Salt from localStorage]
+    
+    U --> V[Show Action and Salt]
+    
+    V --> W[Click Reveal]
+    
+    W --> X[Wallet Popup Sign]
+    
+    X --> Y[Send action and salt]
+    
+    Y --> Z[Recompute Hash]
+    
+    Z --> AA{Hash Matches?}
+    AA -->|No| AB[Invalid Reveal]
+    AA -->|Yes| AC{5 Blocks Passed?}
+    
+    AC -->|No| AD[Too Early]
+    AC -->|Yes| AE{Already Revealed?}
+    
+    AE -->|Yes| AF[Already Revealed]
+    AE -->|No| AG[Mark Revealed]
+    
+    AG --> AH[Emit Revealed Event]
+    AH --> AI[Reveal Successful]
+    
+    AI --> AJ[Execute Action]
+```
 
 ### Example Benchmark Workflow
 
